@@ -7,6 +7,8 @@ def call (body) {
 
   container('python') {
     sh '''
+      git clone https://github.com/israelnp/app-python.git
+      cd app-python
       pip install -r requirements.txt
       bandit -r . -x '/.venv/','/tests/'
       black .
