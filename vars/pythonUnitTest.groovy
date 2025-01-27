@@ -1,20 +1,18 @@
-def call() {
-    container('python') {
-        sh '''
-        echo "Instalando dependências..."
-        pip install -r requirements.txt
+def call (body) {
 
-        echo "Análise estática de código com Bandit..."
-        bandit -r . -x '/.venv/','/tests/'
+  def settings = [:]
+  body.resolveStrategy = Closure.DELEGATE_FIRST
+  body.delegate = settings
+  body()
 
-        echo "Formatando código com Black..."
-        black .
+  container('python') {
+    sh '''
+      pip install -r requirements.txt
+      bandit -r . -x '/.venv/','/tests/'
+      black .
+      flake8 . --exclude .venv
+      pytest -v --disable-warnings
+    '''
+  }
 
-        echo "Executando Flake8 para linting..."
-        flake8 . --exclude .venv
-
-        echo "Executando testes com Pytest..."
-        pytest -v --disable-warnings
-        '''
-    }
 }
