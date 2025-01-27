@@ -11,9 +11,6 @@ def call (body) {
         yamlFile 'jenkinsPod.yaml'
       }
     }
-    environment {
-      DISCORD_WEBHOOK = credentials('discord-webhook')
-    }
     stages {
       stage('Unit tests') { 
         steps {
