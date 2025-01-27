@@ -6,26 +6,37 @@ def call (body) {
   body()
 
   pipeline {
-      agent {
-          kubernetes {
-              yamlFile 'jenkinsPod.yaml'
-              
+    agent {
+      kubernetes {
+        yamlFile 'jenkinsPod.yaml'
+      }
+    }
+    environment {
+      DISCORD_WEBHOOK = credentials('discord-webhook')
+    }
+    stages {
+      stage('Unit tests') { 
+        steps {
+          pythonUnitTest {}
+        }
+        when {
+          anyOf {
+            branch pattern: "feature-*"
+            branch pattern: "develop"
+            branch pattern: "hotfix-*"
+            branch pattern: "release-*"
+            branch pattern: "v*"
           }
+        }
       }
-      stages {
-        stage('Unit tests') { 
-            steps {
-                pythonUnitTest {}
-            }
-            when {
-            anyOf {
-                branch pattern: "feature-*"
-                branch pattern: "develop"
-                branch pattern: "hotfix-*"
-                branch pattern: "release-*"
-                branch pattern: "v*"
-            }
-            }
-      }
-   }
+     
+     
+   
+    
+      
+      
+     
+    }
+   
+  }
 }
