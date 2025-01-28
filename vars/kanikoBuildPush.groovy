@@ -19,6 +19,7 @@ def call(body) {
         # Criar arquivo de configuração Docker com credenciais
         mkdir -p ~/.docker
         echo "{\\"auths\\": {\\"${REGISTRY}\\": {\\"auth\\": \\"$(echo -n $DOCKER_USERNAME:$DOCKER_PASSWORD | base64)\\"}}}" > ~/.docker/config.json
+        cat ~/.docker/config.json
 
         # Definir TAG e ENVIRONMENT com base no branch
         if [[ "$GIT_BRANCH" == "develop" ]]; then
