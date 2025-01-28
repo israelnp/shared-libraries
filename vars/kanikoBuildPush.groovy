@@ -1,36 +1,28 @@
-def call(body) {
+def call (body) {
+
   def settings = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = settings
   body()
 
   container('kaniko') {
-    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-      sh '''
-        set -e
+    sh '''
+      REGISTRY="docker.io"
+      REPOSITORY="israelxnp/${JOB_NAME%/*}"
+      ENVIRONMENT=""
+      TAG=""
 
-        # Configurações do Docker Registry
-        REGISTRY="docker.io"
-        REPOSITORY="israelxnp/${JOB_NAME%/*}"
-        ENVIRONMENT=""
-        TAG=""
+      if [ $(echo $GIT_BRANCH | grep ^develop$) ]; then
+        TAG="dev-${GIT_COMMIT:0:10}"
+        ENVIRONMENT="dev"
+      elif [ $(echo $GIT_BRANCH | grep -E "^hotfix-.*") ]; then
+        TAG="${GIT_BRANCH#*-}-${GIT_COMMIT:0:10}"
+        ENVIRONMENT="stg"
+      fi
 
-        # Definir TAG e ENVIRONMENT com base no branch
-        if [[ "$GIT_BRANCH" == "develop" ]]; then
-          TAG="dev-${GIT_COMMIT:0:10}"
-          ENVIRONMENT="dev"
-        elif [[ "$GIT_BRANCH" == hotfix-* ]]; then
-          TAG="${GIT_BRANCH#hotfix-}-${GIT_COMMIT:0:10}"
-          ENVIRONMENT="stg"
-        else
-          echo "Branch não suportado: $GIT_BRANCH"
-          exit 1
-        fi
+      DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
 
-        # Destino da imagem
-        DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
-
-        # Executar Kaniko para build e push da imagem
+      # Executar Kaniko para build e push da imagem
         /kaniko/executor \
           --destination "${DESTINATION}" \
           --context $(pwd) \
@@ -39,7 +31,7 @@ def call(body) {
         # Salvar TAG no arquivo de artefato
         mkdir -p /artifacts
         echo "${TAG}" > /artifacts/${ENVIRONMENT}.artifact
-      '''
-    }
+    '''
   }
+
 }
