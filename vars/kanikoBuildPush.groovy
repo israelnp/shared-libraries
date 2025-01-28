@@ -13,7 +13,6 @@ def call(body) {
       ENVIRONMENT=""
       TAG=""
 
-      # Verificação do branch e definição de TAG e ENVIRONMENT
       if [[ "$GIT_BRANCH" == "develop" ]]; then
         TAG="dev-${GIT_COMMIT:0:10}"
         ENVIRONMENT="dev"
@@ -21,19 +20,22 @@ def call(body) {
         TAG="${GIT_BRANCH#*-}-${GIT_COMMIT:0:10}"
         ENVIRONMENT="stg"
       else
-        echo "Branch não suportado: $GIT_BRANCH"
+        echo "Erro: Branch ${GIT_BRANCH} não suportado."
         exit 1
       fi
 
       DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
 
-      # Executar Kaniko para build e push da imagem
+      if [[ ! -f Dockerfile ]]; then
+        echo "Erro: Dockerfile não encontrado."
+        exit 1
+      fi
+
       /kaniko/executor \
         --destination "${DESTINATION}" \
         --context $(pwd) \
         --dockerfile $(pwd)/Dockerfile
 
-      # Salvar TAG no arquivo de artefato
       mkdir -p /artifacts
       echo "${TAG}" > /artifacts/${ENVIRONMENT}.artifact
     '''
