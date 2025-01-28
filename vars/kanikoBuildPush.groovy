@@ -1,4 +1,10 @@
-container('kaniko') {
+def call(body) {
+  def settings = [:]
+  body.resolveStrategy = Closure.DELEGATE_FIRST
+  body.delegate = settings
+  body()
+
+  container('kaniko') {
   withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
     sh '''
       set -e
@@ -33,4 +39,5 @@ container('kaniko') {
       echo "${TAG}" > /artifacts/${ENVIRONMENT}.artifact
     '''
   }
+}
 }
