@@ -9,7 +9,7 @@ def call (body) {
   withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
     sh '''
       REGISTRY="docker.io"
-      REPOSITORY="mateusmullerme/${JOB_NAME%/*}"
+      REPOSITORY="israelnp/${JOB_NAME%/*}"
       TAG=""
       ENVIRONMENT=""
 
