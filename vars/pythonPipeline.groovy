@@ -14,9 +14,10 @@ def call (body) {
     stages {
       stage('Unit tests') { 
         steps {
-            script {
-              // pythonUnitTest {}
-            }
+            // script {
+            //    pythonUnitTest {}
+            // }
+            sh ''' ls -la '''
         }
         when {
           anyOf {
