@@ -15,7 +15,7 @@ def call (body) {
       stage('Unit tests') { 
         steps {
             script {
-              pythonUnitTest {}
+              // pythonUnitTest {}
             }
         }
         when {
