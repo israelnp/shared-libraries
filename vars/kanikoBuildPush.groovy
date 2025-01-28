@@ -1,4 +1,4 @@
-def call (body) {
+def call(body) {
 
   def settings = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -6,35 +6,45 @@ def call (body) {
   body()
 
   container('kaniko') {
-  withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-    sh '''
-      REGISTRY="docker.io"
-      REPOSITORY="israelxnp/${JOB_NAME%/*}"
-      TAG=""
-      ENVIRONMENT=""
+    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+      sh '''
+        set -e
 
-      # Criar arquivo de configuração Docker
-      mkdir -p ~/.docker
-      echo "{\"auths\":{\"docker.io\":{\"username\":\"$DOCKER_USERNAME\",\"password\":\"$DOCKER_PASSWORD\"}}}" > ~/.docker/config.json
+        # Configurações do Docker Registry
+        REGISTRY="docker.io"
+        REPOSITORY="israelxnp/${JOB_NAME%/*}"
+        ENVIRONMENT=""
+        TAG=""
 
-      if [ $(echo $GIT_BRANCH | grep ^develop$) ]; then
-        TAG="dev-${GIT_COMMIT:0:10}"
-        ENVIRONMENT="dev"
-      elif [ $(echo $GIT_BRANCH | grep -E "^hotfix-.*") ]; then
-        TAG="${GIT_BRANCH#*-}-${GIT_COMMIT:0:10}"
-        ENVIRONMENT="stg"
-      fi
+        # Criar arquivo de configuração Docker com credenciais
+        mkdir -p ~/.docker
+        echo "{\\"auths\\": {\\"${REGISTRY}\\": {\\"auth\\": \\"$(echo -n $DOCKER_USERNAME:$DOCKER_PASSWORD | base64)\\"}}}" > ~/.docker/config.json
 
-      DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
+        # Definir TAG e ENVIRONMENT com base no branch
+        if [[ "$GIT_BRANCH" == "develop" ]]; then
+          TAG="dev-${GIT_COMMIT:0:10}"
+          ENVIRONMENT="dev"
+        elif [[ "$GIT_BRANCH" == hotfix-* ]]; then
+          TAG="${GIT_BRANCH#hotfix-}-${GIT_COMMIT:0:10}"
+          ENVIRONMENT="stg"
+        else
+          echo "Branch não suportado: $GIT_BRANCH"
+          exit 1
+        fi
 
-      /kaniko/executor \
-        --insecure \
-        --destination "${DESTINATION}" \
-        --context $(pwd)
+        # Destino da imagem
+        DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
 
-      echo "${TAG}" > /artifacts/${ENVIRONMENT}.artifact
-    '''
+        # Executar Kaniko para build e push da imagem
+        /kaniko/executor \
+          --insecure \
+          --destination "${DESTINATION}" \
+          --context $(pwd)
+
+        # Salvar TAG no arquivo de artefato
+        mkdir -p /artifacts
+        echo "${TAG}" > /artifacts/${ENVIRONMENT}.artifact
+      '''
+    }
   }
-}
-
 }
