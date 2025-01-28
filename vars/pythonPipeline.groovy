@@ -30,7 +30,17 @@ def call (body) {
         }
       }
      
-     
+      stage('Build and Push') {
+        steps {
+          kanikoBuildPush {}
+        }
+        when {
+          anyOf {
+            branch pattern: "develop"
+            branch pattern: "hotfix-*"
+          }
+        }
+      }
    
     
       
