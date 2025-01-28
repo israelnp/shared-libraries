@@ -1,5 +1,4 @@
 def call(body) {
-
   def settings = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = settings
@@ -16,10 +15,10 @@ def call(body) {
         ENVIRONMENT=""
         TAG=""
 
-        # Criar arquivo de configuração Docker com credenciais
+        # Criar arquivo de configuração Docker com credenciais para Kaniko
         mkdir -p ~/.docker
         echo "{\\"auths\\": {\\"${REGISTRY}\\": {\\"auth\\": \\"$(echo -n $DOCKER_USERNAME:$DOCKER_PASSWORD | base64)\\"}}}" > ~/.docker/config.json
-        cat ~/.docker/config.json
+        cat ~/.docker/config.json  # Verificar se o arquivo foi gerado corretamente
 
         # Definir TAG e ENVIRONMENT com base no branch
         if [[ "$GIT_BRANCH" == "develop" ]]; then
@@ -39,7 +38,8 @@ def call(body) {
         # Executar Kaniko para build e push da imagem
         /kaniko/executor \
           --destination "${DESTINATION}" \
-          --context $(pwd)
+          --context $(pwd) \
+          --dockerfile $(pwd)/Dockerfile
 
         # Salvar TAG no arquivo de artefato
         mkdir -p /artifacts
