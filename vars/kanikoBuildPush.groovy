@@ -11,7 +11,7 @@ def call(body) {
       REPOSITORY="israelxnp/${JOB_NAME%/*}"
       TAG="0.0.2"
 
-
+      cat /kaniko/.docker/config.json
       DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
 
       /kaniko/executor \
