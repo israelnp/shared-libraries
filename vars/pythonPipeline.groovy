@@ -17,7 +17,6 @@ def call (body) {
             script {
               pythonUnitTest {}
             }
-          pythonUnitTest {}
         }
         when {
           anyOf {
@@ -32,7 +31,9 @@ def call (body) {
      
       stage('Build and Push') {
         steps {
-          kanikoBuildPush {}
+          script {
+              kanikoBuildPush {}
+            }
         }
         when {
           anyOf {
