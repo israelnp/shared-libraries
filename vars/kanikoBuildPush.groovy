@@ -16,8 +16,9 @@ def call(body) {
         ENVIRONMENT=""
         TAG=""
 
-        # Realizar login no Docker Registry
-        echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin "${REGISTRY}"
+        # Criar arquivo de configuração Docker com credenciais
+        mkdir -p ~/.docker
+        echo "{\\"auths\\": {\\"${REGISTRY}\\": {\\"auth\\": \\"$(echo -n $DOCKER_USERNAME:$DOCKER_PASSWORD | base64)\\"}}}" > ~/.docker/config.json
 
         # Definir TAG e ENVIRONMENT com base no branch
         if [[ "$GIT_BRANCH" == "develop" ]]; then
@@ -36,7 +37,6 @@ def call(body) {
 
         # Executar Kaniko para build e push da imagem
         /kaniko/executor \
-          --insecure \
           --destination "${DESTINATION}" \
           --context $(pwd)
 
