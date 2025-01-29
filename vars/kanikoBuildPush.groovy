@@ -18,7 +18,6 @@ def call(body) {
           --dockerfile=/workspace/Dockerfile \
           --context=dir:///workspace \
           --destination=docker.io/israelxnp/teste3:0.0.2 \
-    
     '''
   }
 }
