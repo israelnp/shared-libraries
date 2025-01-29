@@ -14,7 +14,7 @@ def call(body) {
       cat /kaniko/.docker/config.json
       DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
 
-      /kaniko/executor --dockerfile=/workspace/Dockerfile --context=dir:///workspace --destination=docker.io/israelxnp/teste03:0.0.1
+      /kaniko/executor --dockerfile=/workspace/Dockerfile --context=dir:///workspace --destination=docker.io/israelxnp/teste3:0.0.2
 
     '''
   }
