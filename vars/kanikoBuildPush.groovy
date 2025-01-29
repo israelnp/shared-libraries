@@ -14,8 +14,12 @@ def call(body) {
       cat /kaniko/.docker/config.json
       DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
 
-      /kaniko/executor --dockerfile=/workspace/Dockerfile --context=dir:///workspace --destination=docker.io/israelxnp/teste3:0.0.2
-
+     /kaniko/executor \
+          --dockerfile=/workspace/Dockerfile \
+          --context=dir:///workspace \
+          --destination=docker.io/israelxnp/teste3:0.0.2 \
+          --build-arg DOCKER_USERNAME=israelxnp \
+          --build-arg DOCKER_PASSWORD=Nasp@123456@#$% \
     '''
   }
 }
