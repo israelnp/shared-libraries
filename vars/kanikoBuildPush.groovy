@@ -7,13 +7,9 @@ def call(body) {
   container('kaniko') {
     sh '''
 
-      REGISTRY="docker.io"
-      REPOSITORY="israelxnp/${JOB_NAME%/*}"
-      TAG="0.0.2"
 
       cat /kaniko/.docker/config.json
-      DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
-
+      
      /kaniko/executor \
           --dockerfile=/workspace/Dockerfile \
           --context=dir:///workspace \
