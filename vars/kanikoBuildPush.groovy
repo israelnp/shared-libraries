@@ -9,7 +9,7 @@ def call(body) {
       sh """
         ls -la
         echo $DOCKER_PASSWORD | buildah login -u $DOCKER_USERNAME --password-stdin docker.io
-        buildah bud -f /workspace/Dockerfile -t docker.io/israelxnp/teste3:0.0.2 $(pwd)
+        buildah bud -f /workspace/Dockerfile -t docker.io/israelxnp/teste3:0.0.2 \$(pwd)
         buildah push docker.io/israelxnp/teste3:0.0.2
       """
     }
