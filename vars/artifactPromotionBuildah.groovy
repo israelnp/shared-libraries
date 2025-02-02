@@ -30,6 +30,9 @@ def call(body) {
         echo "🔹 Autenticando no registry..."
         echo "$DOCKER_PASSWORD" | buildah login -u "$DOCKER_USERNAME" --password-stdin docker.io
 
+        echo "🔹 Garantindo que a imagem existe antes do tagging..."
+        buildah pull ${OLD_DESTINATION} || echo "Imagem já disponível localmente"
+
         echo "🔹 Copiando imagem: ${OLD_DESTINATION} -> ${NEW_DESTINATION}"
         buildah tag ${OLD_DESTINATION} ${NEW_DESTINATION}
 
