@@ -28,6 +28,8 @@ def call(body) {
         echo "$DOCKER_PASSWORD" | buildah login -u "$DOCKER_USERNAME" --password-stdin docker.io
         buildah bud -f Dockerfile -t "$DESTINATION" "$(pwd)"
         buildah push "$DESTINATION"
+
+        echo "${TAG}" > /artifacts/${ENVIRONMENT}.artifact
       '''
     }
   }
