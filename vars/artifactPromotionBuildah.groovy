@@ -7,7 +7,7 @@ def call(body) {
   container('buildah') {
     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
       sh '''
-        REGISTRY="harbor.localhost.com/mateusmullerme"
+        REGISTRY="docker.io/israelxnp"
         REPOSITORY=$(echo "$JOB_NAME" | cut -d'/' -f1)
 
         OLD_TAG=""
@@ -28,7 +28,7 @@ def call(body) {
         NEW_DESTINATION="${REGISTRY}/${REPOSITORY}:${TAG}"
 
         echo "🔹 Autenticando no registry..."
-        echo "$DOCKER_PASSWORD" | buildah login -u "$DOCKER_USERNAME" --password-stdin harbor.localhost.com
+        echo "$DOCKER_PASSWORD" | buildah login -u "$DOCKER_USERNAME" --password-stdin docker.io
 
         echo "🔹 Copiando imagem: ${OLD_DESTINATION} -> ${NEW_DESTINATION}"
         buildah tag ${OLD_DESTINATION} ${NEW_DESTINATION}
