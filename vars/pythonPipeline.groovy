@@ -33,7 +33,7 @@ def call (body) {
       stage('Build and Push') {
         steps {
           script {
-              kanikoBuildPush {}
+              buildahBuildPush {}
             }
         }
         when {
@@ -44,7 +44,19 @@ def call (body) {
         }
       }
    
-    
+     stage('Artifact Promotion') {
+        steps {
+          script {
+              artifactPromotionBuildah {}
+            }
+        }
+        when {
+          anyOf {
+            branch pattern: "release-*"
+            branch pattern: "v*"
+          }
+        }
+      }
       
       
      
