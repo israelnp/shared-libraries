@@ -35,7 +35,7 @@ def call(body) {
 
         echo "🔹 Copiando imagem: ${OLD_DESTINATION} -> ${NEW_DESTINATION}"
         buildah tag ${OLD_DESTINATION} ${NEW_DESTINATION}
-
+        buildah push "$NEW_DESTINATION"
         echo "${TAG}" > /artifacts/${ENVIRONMENT}.artifact
       '''
     }
