@@ -16,7 +16,7 @@ def call (body) {
         ENVIRONMENT="stg"
       fi
 
-      cd helm-applications/${JOB_NAME%/*}
+      cd helm-applications
       helm dependency build
       helm upgrade --install \
         --values values-ci.yaml \
