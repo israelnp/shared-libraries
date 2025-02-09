@@ -16,7 +16,7 @@ def call (body) {
         ENVIRONMENT="stg"
       fi
 
-      cd helm-applications
+      cd helm-applications/restapi-flask
       helm dependency build
       helm upgrade --install \
         --values values-ci.yaml \
