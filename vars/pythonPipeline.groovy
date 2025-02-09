@@ -57,7 +57,26 @@ def call (body) {
           }
         }
       }
-      
+    stage('Infrastructure Tests on K8s') {
+        steps {
+          infraTestK8s {}
+        }
+        when {
+          anyOf {
+            branch pattern: "develop"
+            branch pattern: "hotfix-*"
+          }
+        }
+        post {
+          always {
+            container('helm') {
+              sh '''
+                helm delete -n citest flask-ci
+              '''
+            }
+          }
+        }
+      }
       
      
     }
